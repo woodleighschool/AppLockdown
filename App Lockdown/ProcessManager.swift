@@ -40,10 +40,9 @@ class ProcessManager {
         print("Launched app: \(appName)")
         // Create a DateFormatter to format the Date object to a string in 24-hour time
         let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "en_GB")  // Using UK locale to enforce 24-hour time format
+        dateFormatter.locale = Locale(identifier: "en_AU")
         dateFormatter.dateFormat = "HH:mm"  // 24-hour format
         let currentTime = dateFormatter.string(from: Date())
-        print("Debug: Current Time - \(currentTime)")
         let today = Calendar.current.component(.weekday, from: Date())
 
         guard let restrictions = configuration.restrictedHours[Day(rawValue: today)?.description ?? ""] else {
@@ -60,8 +59,6 @@ class ProcessManager {
                     terminate(app: app)
                     return
                 }
-            } else {
-                print("Current time \(currentTime) is not within the restricted time \(restriction).")
             }
         }
         if !isWithinRestrictedTime {
@@ -71,30 +68,14 @@ class ProcessManager {
 
     private func timeIsWithinRestriction(_ currentTime: String, _ restriction: String) -> Bool {
         let times = restriction.split(separator: "-").map(String.init)
-        if times.count != 2 {
-            return false
-        }
-
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_GB") // Ensure 24-hour format
+        formatter.locale = Locale(identifier: "en_AU")
         formatter.dateFormat = "HH:mm"
-
-        if let start = formatter.date(from: times[0]), let end = formatter.date(from: times[1]), let current = formatter.date(from: currentTime) {
-            print("Debug: Parsed Times - Start: \(formatter.string(from: start)), End: \(formatter.string(from: end)), Current: \(formatter.string(from: current))")
-            return current >= start && current <= end
-        } else {
-            print("Error parsing times in restriction. Start: \(times[0]), End: \(times[1]), Current: \(currentTime)")
-            if formatter.date(from: times[0]) == nil {
-                print("Debug: Failed to parse start time - \(times[0])")
-            }
-            if formatter.date(from: times[1]) == nil {
-                print("Debug: Failed to parse end time - \(times[1])")
-            }
-            if formatter.date(from: currentTime) == nil {
-                print("Debug: Failed to parse current time - \(currentTime)")
-            }
+        guard let start = formatter.date(from: times[0]), let end = formatter.date(from: times[1]), let current = formatter.date(from: currentTime) else {
+            print("Error parsing times in restriction.")
             return false
         }
+        return current >= start && current <= end
     }
 
     private func isRestrictedApp(appName: String) -> Bool {
