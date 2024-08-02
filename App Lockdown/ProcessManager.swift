@@ -10,10 +10,11 @@ import Cocoa
 
 class ProcessManager {
     var configuration: Configuration
+    var currentlyAlerting = Set<String>()
 
     init(configuration: Configuration) {
         self.configuration = configuration
-        setupProcessMonitoring()  // Start monitoring when instance is created.
+        setupProcessMonitoring()
         print("ProcessManager initialized and monitoring started.")
     }
 
@@ -23,13 +24,12 @@ class ProcessManager {
             self,
             selector: #selector(appLaunched(notification:)),
             name: NSWorkspace.didLaunchApplicationNotification,
-            object: nil  // It's fine to keep object nil here
+            object: nil
         )
         print("Notification observer for app launches set up.")
     }
 
     @objc func appLaunched(notification: Notification) {
-        print("Application launch detected.")
         guard let userInfo = notification.userInfo,
               let app = userInfo[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
               let appName = app.localizedName else {
@@ -37,14 +37,12 @@ class ProcessManager {
             return
         }
 
-        print("Launched app: \(appName)")
-        // Create a DateFormatter to format the Date object to a string in 24-hour time
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "en_AU")
-        dateFormatter.dateFormat = "HH:mm"  // 24-hour format
+        dateFormatter.dateFormat = "HH:mm"
         let currentTime = dateFormatter.string(from: Date())
         let today = Calendar.current.component(.weekday, from: Date())
-
+        
         guard let restrictions = configuration.restrictedHours[Day(rawValue: today)?.description ?? ""] else {
             print("No restrictions found for today.")
             return
@@ -52,18 +50,37 @@ class ProcessManager {
 
         var isWithinRestrictedTime = false
         for restriction in restrictions {
-            if timeIsWithinRestriction(currentTime, restriction) {
+            if timeIsWithinRestriction(currentTime, restriction) && isRestrictedApp(appName: appName) {
                 isWithinRestrictedTime = true
-                print("Current time \(currentTime) is within the restricted time \(restriction).")
-                if isRestrictedApp(appName: appName) {
-                    terminate(app: app)
-                    return
+                terminate(app: app)
+                if !currentlyAlerting.contains(appName) {
+                    showAlert(processName: appName, icon: app.icon)
                 }
+                return
             }
         }
+
         if !isWithinRestrictedTime {
             print("Current time \(currentTime) is not within any restricted times.")
         }
+    }
+
+    private func terminate(app: NSRunningApplication) {
+        print("Terminating app: \(app.localizedName ?? "Unknown")")
+        kill(pid_t(app.processIdentifier), SIGKILL)
+    }
+
+    private func showAlert(processName: String, icon: NSImage?) {
+        print("Alert: Restricted Process Terminated - \(processName)")
+        let alert = NSAlert()
+        alert.messageText = "Restricted Process Terminated"
+        alert.informativeText = "You are not permitted to access \(processName) during restricted hours."
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "OK")
+        alert.icon = icon
+        currentlyAlerting.insert(processName)
+        alert.runModal()
+        currentlyAlerting.remove(processName)  // Remove from set once alert is dismissed
     }
 
     private func timeIsWithinRestriction(_ currentTime: String, _ restriction: String) -> Bool {
@@ -92,23 +109,6 @@ class ProcessManager {
                 return true
             }
         }
-        print("App \(appName) is not restricted.")
         return false
-    }
-
-    private func terminate(app: NSRunningApplication) {
-        print("Terminating app: \(app.localizedName ?? "Unknown")")
-        kill(pid_t(app.processIdentifier), SIGKILL) // Use pid_t for correct type
-        showAlert(processName: app.localizedName ?? "Unknown")
-    }
-
-    private func showAlert(processName: String) {
-        print("Alert: Restricted Process Terminated - \(processName)")
-        let alert = NSAlert()
-        alert.messageText = "Restricted Process Terminated"
-        alert.informativeText = "You are not permitted to access \(processName) during restricted hours."
-        alert.alertStyle = .warning
-        alert.addButton(withTitle: "OK")
-        alert.runModal()
     }
 }

@@ -10,7 +10,7 @@ import Foundation
 let jsonFetcher = JSONFetcher(url: "https://hyde.services/config.json")
 jsonFetcher.fetchConfiguration()
 
-// Set up a timer to fetch configuration every hour
+// Timer to fetch configuration every hour
 Timer.scheduledTimer(withTimeInterval: 3600, repeats: true) { _ in
     jsonFetcher.fetchConfiguration()
 }
