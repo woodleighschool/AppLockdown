@@ -10,7 +10,7 @@
 		419BF27A2C5B4ADC00AD7EEB /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419BF2792C5B4ADC00AD7EEB /* main.swift */; };
 		419BF2842C5B4BEB00AD7EEB /* ProcessManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419BF2832C5B4BEA00AD7EEB /* ProcessManager.swift */; };
 		419BF2862C5B4BF500AD7EEB /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419BF2852C5B4BF400AD7EEB /* Configuration.swift */; };
-		419BF2882C5B4CC200AD7EEB /* JSONFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419BF2872C5B4CBD00AD7EEB /* JSONFetcher.swift */; };
+		419BF2882C5B4CC200AD7EEB /* ConfigLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419BF2872C5B4CBD00AD7EEB /* ConfigLoader.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -31,7 +31,7 @@
 		419BF2792C5B4ADC00AD7EEB /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		419BF2832C5B4BEA00AD7EEB /* ProcessManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessManager.swift; sourceTree = "<group>"; };
 		419BF2852C5B4BF400AD7EEB /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
-		419BF2872C5B4CBD00AD7EEB /* JSONFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONFetcher.swift; sourceTree = "<group>"; };
+		419BF2872C5B4CBD00AD7EEB /* ConfigLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigLoader.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,7 +66,7 @@
 			children = (
 				419148A42C5BB37000AD7EEB /* App Lockdown.entitlements */,
 				419BF2832C5B4BEA00AD7EEB /* ProcessManager.swift */,
-				419BF2872C5B4CBD00AD7EEB /* JSONFetcher.swift */,
+				419BF2872C5B4CBD00AD7EEB /* ConfigLoader.swift */,
 				419BF2852C5B4BF400AD7EEB /* Configuration.swift */,
 				419BF2792C5B4ADC00AD7EEB /* main.swift */,
 			);
@@ -134,7 +134,7 @@
 				419BF2862C5B4BF500AD7EEB /* Configuration.swift in Sources */,
 				419BF27A2C5B4ADC00AD7EEB /* main.swift in Sources */,
 				419BF2842C5B4BEB00AD7EEB /* ProcessManager.swift in Sources */,
-				419BF2882C5B4CC200AD7EEB /* JSONFetcher.swift in Sources */,
+				419BF2882C5B4CC200AD7EEB /* ConfigLoader.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -15,8 +15,15 @@ class ProcessManager {
     init(configuration: Configuration) {
         self.configuration = configuration
         setupProcessMonitoring()
+        checkAndTerminateExistingRestrictedProcesses()
         print("ProcessManager initialized and monitoring started.")
     }
+    
+    func updateConfiguration(configuration: Configuration) {
+        self.configuration = configuration
+        checkAndTerminateExistingRestrictedProcesses()
+    }
+
 
     private func setupProcessMonitoring() {
         let notificationCenter = NSWorkspace.shared.notificationCenter
@@ -27,6 +34,20 @@ class ProcessManager {
             object: nil
         )
         print("Notification observer for app launches set up.")
+    }
+
+    private func checkAndTerminateExistingRestrictedProcesses() {
+        let apps = NSWorkspace.shared.runningApplications
+        for app in apps {
+            if let appName = app.localizedName, isRestrictedApp(appName: appName) {
+                let currentTime = getCurrentTimeString()
+                let today = Calendar.current.component(.weekday, from: Date())
+                if let restrictions = configuration.restrictedHours[Day(rawValue: today)?.description ?? ""], restrictions.contains(where: { timeIsWithinRestriction(currentTime, $0) }) {
+                    terminate(app: app)
+                    showAlert(processName: appName, icon: app.icon)
+                }
+            }
+        }
     }
 
     @objc func appLaunched(notification: Notification) {
@@ -111,4 +132,11 @@ class ProcessManager {
         }
         return false
     }
+    private func getCurrentTimeString() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_AU")
+        dateFormatter.dateFormat = "HH:mm"
+        return dateFormatter.string(from: Date())
+    }
 }
+

@@ -7,12 +7,14 @@
 
 import Foundation
 
-let jsonFetcher = JSONFetcher(url: "https://hyde.services/config.json")
-jsonFetcher.fetchConfiguration()
+let configLoader = ConfigLoader()
 
-// Timer to fetch configuration every hour
-Timer.scheduledTimer(withTimeInterval: 3600, repeats: true) { _ in
-    jsonFetcher.fetchConfiguration()
+// Load initial configuration
+configLoader.loadConfiguration()
+
+// Setup timer to reload configuration every 60 seconds
+Timer.scheduledTimer(withTimeInterval: 60.0, repeats: true) { _ in
+    configLoader.loadConfiguration()
 }
 
 // Main run loop to keep the application running
